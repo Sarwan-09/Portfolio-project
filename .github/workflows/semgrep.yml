@@ -1,0 +1,29 @@
+name: Semgrep
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    # Skip on dependabot PRs (no access to secrets / not needed)
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        run: semgrep ci
+        env:
+          # Free, open-source rulesets from the public registry.
+          # No SEMGREP_APP_TOKEN / account required.
+          SEMGREP_RULES: "p/default"
